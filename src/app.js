@@ -3,8 +3,7 @@ const app = express();
 
 app.use(express.json());
 
-// Регистрация модулей
 const unitRoutes = require('./modules/unit');
-app.use('/units', unitRoutes);
+app.use('/unit', unitRoutes);
 
 module.exports = app;
