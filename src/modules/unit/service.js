@@ -1,4 +1,4 @@
-const unitModel = require('./model');
+const unitModel = require('./db');
 
 const validateUnit = (data) => {
     if (!data.name || data.name.length <= 4) {

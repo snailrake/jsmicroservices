@@ -1,52 +1,53 @@
-const service = require('./service');
-const { sendLog } = require('../log/logger');
+const unitService = require('./service');
 
 exports.getAllUnits = async (req, res) => {
-    const units = await service.getAllUnits();
-    await sendLog('Получены все юниты');
-    res.status(200).json(units);
+    try {
+        const units = await unitService.getAllUnits();
+        res.json(units);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
-exports.getUnit = async (req, res) => {
+exports.getUnitById = async (req, res) => {
     try {
-        const unit = await service.getUnit(req.params.id);
-        await sendLog(`Получен юнит с id=${req.params.id}`);
-        res.status(200).json(unit);
-    } catch (err) {
-        await sendLog(`Ошибка: юнит с id=${req.params.id} не найден`);
-        res.status(404).json({ message: 'Unit не найден' });
+        const unit = await unitService.getUnitById(req.params.id);
+        if (!unit) {
+            return res.status(404).json({ message: 'Unit not found' });
+        }
+        res.json(unit);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };
 
 exports.createUnit = async (req, res) => {
     try {
-        const unit = await service.createUnit(req.body);
-        await sendLog('Создан новый юнит');
-        res.status(201).json(unit);
-    } catch (err) {
-        await sendLog('Ошибка создания юнита');
-        res.status(400).json({ message: err.message });
+        console.log('createUnit', req.body);
+        const newUnit = await unitService.createUnit(req.body);
+        res.status(201).json(newUnit);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 };
 
 exports.updateUnit = async (req, res) => {
     try {
-        const unit = await service.updateUnit(req.params.id, req.body);
-        await sendLog(`Обновлён юнит с id=${req.params.id}`);
-        res.status(200).json(unit);
-    } catch (err) {
-        await sendLog(`Ошибка обновления юнита с id=${req.params.id}`);
-        res.status(400).json({ message: err.message });
+        const updatedUnit = await unitService.updateUnit(req.params.id, req.body);
+        if (!updatedUnit) {
+            return res.status(404).json({ message: 'Unit not found' });
+        }
+        res.json(updatedUnit);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 };
 
 exports.deleteUnit = async (req, res) => {
     try {
-        await service.deleteUnit(req.params.id);
-        await sendLog(`Удалён юнит с id=${req.params.id}`);
-        res.status(200).json({ message: 'Unit удалён' });
-    } catch (err) {
-        await sendLog(`Ошибка удаления юнита с id=${req.params.id}`);
-        res.status(404).json({ message: err.message });
+        await unitService.deleteUnit(req.params.id);
+        res.json({ message: 'Unit deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 };
